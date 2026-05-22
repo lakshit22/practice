@@ -1,4 +1,5 @@
 Stream API (java.util.stream)
+
 Features of stream:
 Stream does not store elements. It simply conveys elements from a source
 Streams are functional in nature. Operations performed on a stream do not modify its source.
@@ -11,11 +12,11 @@ Intermediate operations in Java Streams return another Stream. multiple intermed
 Common Intermediate Operations:
 
 map(Function<T, R>): Transforms each element of the Stream into another form using the provided function.
+flatMap(Function<T, Stream<R>>): Transforms each element into zero or more elements by applying a function that returns a stream for each element.
 mapToDouble(ToDoubleFunction<? super T> mapper)
 mapToInt(ToIntFunction<? super T> mapper)
 mapToLong(ToLongFunction<? super T> mapper)
 filter(Predicate<T>): Selects elements from the Stream based on a specified condition.
-flatMap(Function<T, Stream<R>>): Transforms each element into zero or more elements by applying a function that returns a stream for each element.
 flatMapToDouble(Function<? super T,? extends DoubleStream> mapper): It returns a DoubleStream consisting of the results of replacing each element of this stream with the contents of a mapped stream produced by applying the provided mapping function to each element.
 flatMapToInt(Function<? super T,? extends IntStream> mapper): It returns an IntStream consisting of the results of replacing each element of this stream with the contents of a mapped stream produced by applying the provided mapping function to each element. Each mapped stream is closed after its contents have been placed into this stream.
 flatMapToLong(Function<? super T,? extends LongStream> mapper): It returns a LongStream consisting of the results of replacing each element of this stream with the contents of a mapped stream produced by applying the provided mapping function to each element. Each mapped stream is closed after its contents have been placed into this stream.
@@ -180,83 +181,86 @@ Returns an array containing the elements of this stream, using the provided gene
 
 Solving Stream Api functions:
 
-Instead of just jumping to random functions, we should follow: Data → transform → collect and At every line, ask: “What is the type of the stream RIGHT NOW?”
+Instead of just jumping to random functions,
+we should follow: Data → transform → collect
+and At every line, ask: “What is the type of the stream RIGHT NOW?”
 
 Step 1: Understand the INPUT clearly
 	Is it List<T>?
-Is it Map<K, V>?
-Is it array?
+    Is it Map<K, V>?
+    Is it array?
+
 Step 2: Decide the OUTPUT (VERY IMPORTANT)
 	Single value? (int, String)
-Collection? (List<T>, Set<T>)
-Map? (Map<K, V>)
-Optional?
+    Collection? (List<T>, Set<T>)
+    Map? (Map<K, V>)
+    Optional?
+
 Step 3: Convert to stream (only ONCE)
 	list.stream()
-map.entrySet().stream()
-Arrays.stream(arr)
-Step 4: Apply transformations (0–N times)
+    map.entrySet().stream()
+    Arrays.stream(arr)
 
-Method
-Purpose
-filter
-Remove elements
-map
-Transform
-flatMap
-Flatten
-distinct
-Remove duplicates
-sorted
-Sort
+Step 4: Apply transformations (0–N times)
+    Method
+    Purpose
+    filter
+    Remove elements
+    map
+    Transform
+    flatMap
+    Flatten
+    distinct
+    Remove duplicates
+    sorted
+    Sort
 
 Step 5: Apply terminal operation (ONLY ONE)
-
-Goal
-Terminal op
-Collection
-collect()
-Single value
-findFirst(), reduce()
-Boolean
-anyMatch()
-Count
-count()
+    Goal
+    Terminal op
+    Collection
+    collect()
+    Single value
+    findFirst(), reduce()
+    Boolean
+    anyMatch()
+    Count
+    count()
 
 Step 6: Verify logic WITHOUT stream (IMPORTANT)
-Before coding, ask: “How would I solve this with a loop?”
-If you can’t do it with a loop, Stream won’t save you.
+    Before coding, ask: “How would I solve this with a loop?”
+    If you can’t do it with a loop, Stream won’t save you.
 
 Common Stream Patterns (MUST PRACTICE)
 
 Pattern 1️: Filter → Map → Collect
-List<String> names = users.stream()
-    .filter(u -> u.getAge() > 18)
-    .map(User::getName)
-    .collect(Collectors.toList());
+    List<String> names = users.stream()
+        .filter(u -> u.getAge() > 18)
+        .map(User::getName)
+        .collect(Collectors.toList());
 
 Pattern 2️: Grouping
-Map<String, List<Employee>> map =
-    employees.stream()
-        .collect(Collectors.groupingBy(Employee::getDept));
+    Map<String, List<Employee>> map =
+        employees.stream()
+            .collect(Collectors.groupingBy(Employee::getDept));
 
 Pattern 3️: Grouping + Aggregation
-Map<String, Integer> sumByDept =
-    employees.stream()
-        .collect(Collectors.groupingBy(
-            Employee::getDept,
-            Collectors.summingInt(Employee::getSalary)
-        ));
+    Map<String, Integer> sumByDept =
+        employees.stream()
+            .collect(Collectors.groupingBy(
+                Employee::getDept,
+                Collectors.summingInt(Employee::getSalary)
+            ));
 
 Pattern 4️: Max / Min
-employees.stream()
-    .max(Comparator.comparing(Employee::getSalary));
+    employees.stream()
+        .max(Comparator.comparing(Employee::getSalary));
 
 Pattern 5️: Map → EntrySet → Stream
-map.entrySet().stream()
-   .filter(e -> e.getValue() > 100)
-   .map(Map.Entry::getKey)
-   .collect(Collectors.toList());
+    map.entrySet().stream()
+       .filter(e -> e.getValue() > 100)
+       .map(Map.Entry::getKey)
+       .collect(Collectors.toList());
 
 Comparator Questions
 For any comparator question, separate these two concerns:
@@ -268,29 +272,29 @@ For eg. There is a question, we are having an employee class where we have age a
 Step-by-Step Thinking (Memorize this flow)
 
 Step 1️: Understand the data
-class Employee {
-    private int age;
-    private int marks;
+    class Employee {
+        private int age;
+        private int marks;
 
-    // constructor
+        // constructor
 
-    public int getAge(){
-    	return age;
+        public int getAge(){
+            return age;
+        }
+
+        public int getMarks(){
+            return marks;
+        }
+
+       // setters
     }
-
-    public int getMarks(){
-    	return marks;
-    }
-
-   // setters
-}
-Input: List<Employee>
+    Input: List<Employee>
 
 Step 2️: Apply condition (age > 30)
-This is NOT comparator logic — this is filtering.
+    This is NOT comparator logic — this is filtering.
 
 Step 3️: Decide sorting logic
-Sort by: marks (ascending or descending — clarify)
+    Sort by: marks (ascending or descending — clarify)
 
 Answer: List<Employee> sortedList = list.stream()
 					.filter(s -> s.getAge() > 30)
